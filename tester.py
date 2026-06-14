@@ -1,7 +1,7 @@
-# link to the file: https://t.me/c/2610782430/1757
-# link to the file: https://t.me/c/2610782430/1757
-# link to the file: https://t.me/c/2610782430/1757
-# link to the file: https://t.me/c/2610782430/1757
+# link to the file: https://t.me/PaketPKSoftware
+# link to the file: https://t.me/PaketPKSoftware
+# link to the file: https://t.me/PaketPKSoftware
+# link to the file: https://t.me/PaketPKSoftware
 
 import ast
 
