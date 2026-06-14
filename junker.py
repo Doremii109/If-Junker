@@ -107,9 +107,10 @@ a.clear()''')
 class FStr(ast.NodeTransformer):
     def form_val(self, node: ast.FormattedValue):
         _cv = {97: 'ascii', 114: 'repr', 115: 'str', -1: 'str'}
-        cv = _cv[node.conversion]
+        cv = _cv[cv__:=node.conversion]
         if (frmt_sp:=node.format_spec):
-            return f'format({cv}({ast.unparse(node.value)}), "{ast.unparse(frmt_sp)}")'
+            if cv__ == -1: cv = ''
+            return f'format({cv}({ast.unparse(node.value)}), {ast.unparse(frmt_sp)})'
         return f'{cv}({ast.unparse(node.value)})'
     def visit_JoinedStr(self, node):
         self.generic_visit(node)
@@ -479,7 +480,7 @@ class Val(ast.NodeTransformer):
         vals = self.vals
 
         if hasattr(n, 'args'):
-            if (nar:=n.args) and vals:
+            if (nar:=n.args) and vals and isinstance(nar, list):
                 n.args[ri(0, len(nar) - 1)] = ast.Name(rc(vals), ast.Load())
             elif vals:
                 if (_ll:=len(vals)) > 3: _t = [ast.Name(i, ast.Load()) for i in _getParam(ri(1, 3), vals)]
