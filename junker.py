@@ -96,10 +96,12 @@ a.clear()''')
         p = ast.parse
         if isinstance(tr:=node.target, ast.Name):
             _tmp = p(f'__annotations__["{tr.id}"] = {ast.unparse(node.annotation)}').body[0]
+            if node.value is None: return [_tmp]
             node = p(f'{tr.id} = {ast.unparse(node.value)}').body[0]
             return [_tmp, node]
         elif isinstance(tr, ast.Attribute):
             _tmp =p(f'__annotations__["{ast.unparse(tr)}"] = {ast.unparse(node.annotation)}').body[0]
+            if node.value is None: return [_tmp]
             node = p(f'{ast.unparse(tr)} = {ast.unparse(node.value)}').body[0]
             return [_tmp, node]
         return node
@@ -121,7 +123,6 @@ class FStr(ast.NodeTransformer):
             elif isinstance(_node, ast.Constant):
                 js_l.append(repr(_node.value))
         return ast.parse(f'str().join([{','.join(js_l)}])').body[0].value
-
 
 def fixAst(AST):
     return ast.parse(ast.unparse(AST))
@@ -147,6 +148,7 @@ class Assign_(ast.NodeTransformer):
 
     def visit_Assign(self, node):
         if isinstance(tr:=node.targets[0], ast.Tuple):
+            if any(isinstance(e, ast.Starred) for e in tr.elts): return node # temp
             _ft = f'{(val_name:=_genName())} = list({ast.unparse(node.value)});'
             for index, elt in enumerate(tr.elts):
                 _ft += self.parseTuple(elt, index, val_name)
@@ -634,4 +636,4 @@ def main(inp: str, out: str):
     open(out, 'w', encoding='utf8').write(asd)
 
 if __name__ == '__main__':
-    main('tester.py', 'obf.py')
+    main('f_test.py', 'obf.py')
